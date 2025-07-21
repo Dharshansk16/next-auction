@@ -854,7 +854,8 @@ export default function CricketAuctionAdmin() {
                 </div>
                 {teams.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    No teams added yet. Click "Add Team" to get started.
+                    No teams added yet. Click &quot;Add Team&quot; to get
+                    started.
                   </div>
                 )}
               </CardContent>
@@ -911,14 +912,19 @@ export default function CricketAuctionAdmin() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      const truncate = (str: any, maxLength = 30) => {
+                      const truncate = (
+                        str: string | number | boolean | null | undefined,
+                        maxLength = 30
+                      ) => {
                         const value = str?.toString() ?? "";
                         return value.length > maxLength
                           ? value.slice(0, maxLength - 3) + "..."
                           : value;
                       };
 
-                      const escapeCSV = (value: any) => {
+                      const escapeCSV = (
+                        value: string | number | boolean | null | undefined
+                      ) => {
                         const str = truncate(value);
                         if (
                           str.includes(",") ||
