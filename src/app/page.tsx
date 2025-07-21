@@ -312,7 +312,7 @@ export default function CricketAuctionAdmin() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-50 mb-2">
-            Cricket Auction Admin
+            Baarish Cup Auction-2025
           </h1>
           <p className="text-gray-400">
             Manage teams, track player auctions, and monitor budgets in
@@ -526,7 +526,7 @@ export default function CricketAuctionAdmin() {
                     disabled={teams.length === 0}
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Record Sale
+                    Record
                   </Button>
                 </CardContent>
               </Card>
@@ -626,7 +626,7 @@ export default function CricketAuctionAdmin() {
                   </TableHeader>
                   <TableBody>
                     {filteredPlayers.map((player) => {
-                      const team = teams.find((t) => t.id === player.teamId);
+                      // const team = teams.find((t) => t.id === player.teamId);
                       return (
                         <TableRow key={player.id}>
                           <TableCell className="font-medium">
@@ -934,7 +934,7 @@ export default function CricketAuctionAdmin() {
 
                       // Step 1: Header row: Team Names
                       const teamHeaderRow = teams
-                        .map((t) => `${escapeCSV(t.name)}, Price,,`)
+                        .map((t) => `${escapeCSV(t.name)}, Points,,`)
                         .join("");
                       csvContent += teamHeaderRow + "\n";
 
