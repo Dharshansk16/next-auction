@@ -426,7 +426,7 @@ export default function CricketAuctionAdmin() {
                 <CardContent>
                   <div className="space-y-3">
                     {players
-                      .slice(-5)
+                      .slice(-10)
                       .reverse()
                       .map((player) => {
                         const team = teams.find((t) => t.id === player.teamId);
