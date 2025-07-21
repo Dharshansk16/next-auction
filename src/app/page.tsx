@@ -911,10 +911,6 @@ export default function CricketAuctionAdmin() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      const maxPlayers = Math.max(
-                        ...teams.map((t) => t.players.length)
-                      );
-
                       const truncate = (str: any, maxLength = 30) => {
                         const value = str?.toString() ?? "";
                         return value.length > maxLength
@@ -936,16 +932,18 @@ export default function CricketAuctionAdmin() {
 
                       let csvContent = "";
 
-                      // Header row with team names
-                      csvContent +=
-                        teams.map((t) => `${escapeCSV(t.name)},,`).join(",") +
-                        "\n";
+                      // Step 1: Header row: Team Names
+                      const teamHeaderRow = teams
+                        .map((t) => `${escapeCSV(t.name)}, Price,,`)
+                        .join("");
+                      csvContent += teamHeaderRow + "\n";
 
-                      // Sub-header row with column labels
-                      csvContent +=
-                        teams.map(() => `Players,Price,`).join("") + "\n";
+                      // Step 2: Find max number of players in any team
+                      const maxPlayers = Math.max(
+                        ...teams.map((t) => t.players.length)
+                      );
 
-                      // Row-wise player data
+                      // Step 3: Build rows
                       for (let i = 0; i < maxPlayers; i++) {
                         const row = teams
                           .map((team) => {
@@ -953,14 +951,14 @@ export default function CricketAuctionAdmin() {
                             return player
                               ? `${escapeCSV(player.name)},${escapeCSV(
                                   player.price
-                                )},`
-                              : ",,";
+                                )},,`
+                              : ",,,";
                           })
                           .join("");
                         csvContent += row + "\n";
                       }
 
-                      // Trigger download
+                      // Step 4: Trigger download
                       const blob = new Blob([csvContent], {
                         type: "text/csv;charset=utf-8;",
                       });
