@@ -48,6 +48,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import DashboardCard from "@/components/dashboard/StatCard";
+import StatCard from "@/components/dashboard/StatCard";
+import TeamStandingsCard from "@/components/dashboard/TeamStandingsCard";
+import RecentAuctions from "@/components/dashboard/RecentAuctions";
+import RecordPlayerCard from "@/components/live-auction/RecordPlayerCard";
+import { useAuctionData } from "@/hooks/useAuctionData";
 
 interface Team {
   id: string;
@@ -69,19 +75,17 @@ interface AuctionRules {
 }
 
 export default function CricketAuctionAdmin() {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [auctionRules, setAuctionRules] = useState<AuctionRules>({
-    minBidIncrement: 10,
-  });
+  const {
+    teams,
+    setTeams,
+    auctionRules,
+    setAuctionRules,
+    players,
+    setPlayers,
+  } = useAuctionData();
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
   const [newTeam, setNewTeam] = useState({ name: "", initialBudget: 1000 });
-  const [playerForm, setPlayerForm] = useState({
-    name: "",
-    price: "",
-    teamId: "",
-  });
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [editingPlayerData, setEditingPlayerData] = useState({
     name: "",
@@ -91,30 +95,6 @@ export default function CricketAuctionAdmin() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTeam, setFilterTeam] = useState("all");
-
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedTeams = localStorage.getItem("cricket-auction-teams");
-    const savedPlayers = localStorage.getItem("cricket-auction-players");
-    const savedRules = localStorage.getItem("cricket-auction-rules");
-
-    if (savedTeams) setTeams(JSON.parse(savedTeams));
-    if (savedPlayers) setPlayers(JSON.parse(savedPlayers));
-    if (savedRules) setAuctionRules(JSON.parse(savedRules));
-  }, []);
-
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    localStorage.setItem("cricket-auction-teams", JSON.stringify(teams));
-  }, [teams]);
-
-  useEffect(() => {
-    localStorage.setItem("cricket-auction-players", JSON.stringify(players));
-  }, [players]);
-
-  useEffect(() => {
-    localStorage.setItem("cricket-auction-rules", JSON.stringify(auctionRules));
-  }, [auctionRules]);
 
   const addOrUpdateTeam = () => {
     if (!newTeam.name.trim()) {
@@ -134,6 +114,9 @@ export default function CricketAuctionAdmin() {
             ? {
                 ...team,
                 name: newTeam.name,
+                remainingPoints:
+                  team.remainingPoints +
+                  (newTeam.initialBudget - team.initialBudget),
                 initialBudget: newTeam.initialBudget,
               }
             : team
@@ -165,55 +148,6 @@ export default function CricketAuctionAdmin() {
     setEditingTeam(team);
     setNewTeam({ name: team.name, initialBudget: team.initialBudget });
     setIsTeamDialogOpen(true);
-  };
-
-  const addPlayer = () => {
-    if (!playerForm.teamId) {
-      setError("Please select a team");
-      return;
-    }
-
-    const price = Number.parseInt(playerForm.price);
-    if (isNaN(price) || price < auctionRules.minBidIncrement) {
-      setError(`Price must be at least ${auctionRules.minBidIncrement} points`);
-      return;
-    }
-
-    const team = teams.find((t) => t.id === playerForm.teamId);
-    if (!team) {
-      setError("Selected team not found");
-      return;
-    }
-
-    if (team.remainingPoints < price) {
-      setError(
-        `${team.name} doesn't have enough points. Remaining: ${team.remainingPoints}`
-      );
-      return;
-    }
-
-    const player: Player = {
-      id: Date.now().toString(),
-      name: playerForm.name.trim() || `Player ${players.length + 1}`,
-      price,
-      teamId: playerForm.teamId,
-    };
-
-    setPlayers([...players, player]);
-    setTeams(
-      teams.map((t) =>
-        t.id === playerForm.teamId
-          ? {
-              ...t,
-              remainingPoints: t.remainingPoints - price,
-              players: [...t.players, player],
-            }
-          : t
-      )
-    );
-
-    setPlayerForm({ name: "", price: "", teamId: "" });
-    setError("");
   };
 
   const filteredPlayers = players
@@ -307,6 +241,11 @@ export default function CricketAuctionAdmin() {
     setEditingPlayerData({ name: "", price: "" });
   };
 
+  const overallSpent = teams.reduce(
+    (sum, team) => sum + (team.initialBudget - team.remainingPoints),
+    0
+  );
+
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-7xl mx-auto">
@@ -330,137 +269,21 @@ export default function CricketAuctionAdmin() {
 
           <TabsContent value="dashboard" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Teams
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{teams.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Players Sold
-                  </CardTitle>
-                  <Trophy className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{players.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Spent
-                  </CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {teams.reduce(
-                      (sum, team) =>
-                        sum + (team.initialBudget - team.remainingPoints),
-                      0
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Min Bid</CardTitle>
-                  <Target className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {auctionRules.minBidIncrement}
-                  </div>
-                </CardContent>
-              </Card>
+              <StatCard label="Total Teams" value={teams.length} />
+              <StatCard label="Players Sold" value={players.length} />
+              <StatCard label="Total Spent" value={overallSpent} />
+              <StatCard label="Min Bid" value={auctionRules.minBidIncrement} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Team Standings</CardTitle>
-                  <CardDescription>Ranked by remaining points</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {getTeamStats().map((team, index) => (
-                      <div
-                        key={team.id}
-                        className="flex items-center justify-between p-3 bg-neutral-800 rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Badge variant="outline">#{index + 1}</Badge>
-                          <div>
-                            <p className="font-medium">{team.name}</p>
-                            <p className="text-sm text-gray-500">
-                              {team.playerCount} players
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium text-green-600">
-                            {team.remainingPoints} left
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {team.totalSpent} spent
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Auctions</CardTitle>
-                  <CardDescription>Latest player sales</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {players
-                      .slice(-10)
-                      .reverse()
-                      .map((player) => {
-                        const team = teams.find((t) => t.id === player.teamId);
-                        return (
-                          <div
-                            key={player.id}
-                            className="flex items-center justify-between p-3 bg-neutral-800 rounded-lg"
-                          >
-                            <div>
-                              <p className="font-medium">{player.name}</p>
-                              <p className="text-sm text-gray-500">
-                                {team?.name}
-                              </p>
-                            </div>
-                            <Badge variant="secondary">
-                              {player.price} pts
-                            </Badge>
-                          </div>
-                        );
-                      })}
-                    {players.length === 0 && (
-                      <p className="text-gray-500 text-center py-4">
-                        No players sold yet
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <TeamStandingsCard teamStats={getTeamStats()} />
+              <RecentAuctions />
             </div>
           </TabsContent>
 
           <TabsContent value="auction" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-1">
+              {/* <Card className="lg:col-span-1">
                 <CardHeader>
                   <CardTitle>Record Player Sale</CardTitle>
                   <CardDescription>
@@ -529,7 +352,8 @@ export default function CricketAuctionAdmin() {
                     Record
                   </Button>
                 </CardContent>
-              </Card>
+              </Card> */}
+              <RecordPlayerCard />
 
               <Card className="lg:col-span-2">
                 <CardHeader>
