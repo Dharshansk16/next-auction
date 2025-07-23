@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Next Auction - Cricket Team Auction Platform",
     description:
-      "Web-based cricket auction app to manage teams, bidding, budgets, and results. Used in the Baarish Cup tournament.",
+      "Web-based cricket auction app to manage teams, bidding, budgets, and results.",
     url: "https://next-auctioner.vercel.app",
     siteName: "Next Auction",
     images: [
