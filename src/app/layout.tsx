@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Next Auction - Cricket Team Auction Platform",
   description:
-    "Run smooth cricket team auctions with Next Auction — a web-based auction management system. Used in real tournaments like Baarish Cup. Create teams, bid on players, track budgets, and export results with ease.",
+    "Run smooth cricket team auctions with Next Auction — a web-based auction management system. Create teams, bid on players, track budgets, and export results with ease.",
   other: {
     "google-site-verification": "QVZ9atOgrKIfJtpSKz1V8IUADFcT91IwwMYJ5rQdT3Q",
   },
