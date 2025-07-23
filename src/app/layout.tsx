@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Baarish Cup Auction",
-  description: "An auction platform for the Baarish Cup",
+  title: "Next Auction - Cricket Team Auction Platform",
+  description:
+    "A web-based auction management system for cricket tournaments. Create teams, bid on players, manage budgets, and export auction data — all in one place.",
 };
 
 export default function RootLayout({
