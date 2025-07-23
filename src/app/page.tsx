@@ -50,8 +50,14 @@ export default function CricketAuctionAdmin() {
         <Tabs defaultValue="dashboard" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="auction">Live Auction</TabsTrigger>
-            <TabsTrigger value="teams">Manage Teams</TabsTrigger>
+            <TabsTrigger value="auction">
+              <span className="block md:hidden">Auction</span>
+              <span className="hidden md:block">Live Auction</span>
+            </TabsTrigger>
+            <TabsTrigger value="teams">
+              <span className="block md:hidden">Teams</span>
+              <span className="hidden md:block">Manage Teams</span>
+            </TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
