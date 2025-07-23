@@ -8,10 +8,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useAuctionData } from "@/hooks/useAuctionData";
+import { useAuctionContext } from "@/contexts/AuctionContext";
 
 export default function RecentAuctions() {
-  const { players, teams } = useAuctionData();
+  const { players, teams } = useAuctionContext();
   return (
     <Card>
       <CardHeader>

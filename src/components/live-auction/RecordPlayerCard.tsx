@@ -20,12 +20,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Player, Team } from "@/types/types";
-import { useAuctionData } from "@/hooks/useAuctionData";
+import { Player } from "@/types/types";
+import { useAuctionContext } from "@/contexts/AuctionContext";
 
 export default function RecordPlayerCard() {
-  const { teams, setTeams, auctionRules, players, setPlayers } =
-    useAuctionData();
+  const { teams, players, setPlayers, setTeams, auctionRules } =
+    useAuctionContext();
 
   const [error, setError] = useState("");
   const [playerForm, setPlayerForm] = useState({
@@ -34,53 +34,49 @@ export default function RecordPlayerCard() {
     teamId: "",
   });
   const addPlayer = () => {
-    const teamId = playerForm.teamId;
-    const name = playerForm.name.trim();
-    const price = parseFloat(playerForm.price);
-
-    if (!teamId) {
+    if (!playerForm.teamId) {
       setError("Please select a team");
       return;
     }
 
+    const price = Number.parseInt(playerForm.price);
     if (isNaN(price) || price < auctionRules.minBidIncrement) {
       setError(`Price must be at least ${auctionRules.minBidIncrement} points`);
       return;
     }
 
-    const selectedTeam = teams.find((team: Team) => team.id === teamId);
-    if (!selectedTeam) {
+    const team = teams.find((t) => t.id === playerForm.teamId);
+    if (!team) {
       setError("Selected team not found");
       return;
     }
 
-    if (selectedTeam.remainingPoints < price) {
+    if (team.remainingPoints < price) {
       setError(
-        `Selected team does not have enough points. Remaining: ${selectedTeam.remainingPoints} pts`
+        `${team.name} doesn't have enough points. Remaining: ${team.remainingPoints}`
       );
       return;
     }
 
-    const newPlayer: Player = {
+    const player: Player = {
       id: Date.now().toString(),
-      name,
-      teamId,
+      name: playerForm.name.trim() || `Player ${players.length + 1}`,
       price,
+      teamId: playerForm.teamId,
     };
 
-    const updatedPlayers = [...players, newPlayer];
-    setPlayers(updatedPlayers);
-
-    const updatedTeams = teams.map((team) =>
-      team.id === teamId
-        ? {
-            ...team,
-            remainingPoints: team.remainingPoints - price,
-            players: [...team.players, newPlayer],
-          }
-        : team
+    setPlayers([...players, player]);
+    setTeams(
+      teams.map((t) =>
+        t.id === playerForm.teamId
+          ? {
+              ...t,
+              remainingPoints: t.remainingPoints - price,
+              players: [...t.players, player],
+            }
+          : t
+      )
     );
-    setTeams(updatedTeams);
 
     setPlayerForm({ name: "", price: "", teamId: "" });
     setError("");
