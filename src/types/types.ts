@@ -13,6 +13,6 @@ export type Player = {
   teamId: string;
 };
 
-export type AuctionRules = {
+export type AuctionRulesType = {
   minBidIncrement: number;
 };

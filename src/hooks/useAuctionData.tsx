@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Player, Team, AuctionRules } from "@/types/types";
+import { Player, Team, AuctionRulesType } from "@/types/types";
 
 export function useAuctionData() {
   const [teams, setTeams] = useState<Team[]>(() => {
@@ -20,7 +20,7 @@ export function useAuctionData() {
     return [];
   });
 
-  const [auctionRules, setAuctionRules] = useState<AuctionRules>(() => {
+  const [auctionRules, setAuctionRules] = useState<AuctionRulesType>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("cricket-auction-rules");
       return saved ? JSON.parse(saved) : { minBidIncrement: 10 };
