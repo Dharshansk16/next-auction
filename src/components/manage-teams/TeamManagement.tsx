@@ -28,7 +28,7 @@ export default function TeamManagement() {
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [newTeam, setNewTeam] = useState({ name: "", initialBudget: 1000 });
   const [error, setError] = useState("");
-  const { teams, setTeams } = useAuctionContext();
+  const { teams, setTeams, players, setPlayers } = useAuctionContext();
 
   const addOrUpdateTeam = () => {
     if (!newTeam.name.trim()) {
@@ -81,7 +81,9 @@ export default function TeamManagement() {
 
   const deleteTeam = (teamId: string) => {
     const updatedTeams = teams.filter((team) => team.id !== teamId);
+    const updatedPlayers = players.filter((player) => player.teamId !== teamId);
     setTeams(updatedTeams);
+    setPlayers(updatedPlayers);
     setEditingTeam(null);
     setNewTeam({ name: "", initialBudget: 1000 });
   };
