@@ -16,7 +16,7 @@
 - 💅 **Responsive UI**: Built with `shadcn/ui` + Tailwind CSS for a clean and modern interface.
 
 ## 🛠 Tech Stack
-
+- ⚡ **Next.js 15** with SEO optimization
 - ⚛️ **React** with functional components and hooks
 - 💨 **Tailwind CSS** for styling
 - 🧩 **shadcn/ui** for modern UI components
