@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Next Auction - Cricket Team Auction Platform",
   description:
     "Run smooth cricket team auctions with Next Auction — a web-based auction management system. Used in real tournaments like Baarish Cup. Create teams, bid on players, track budgets, and export results with ease.",
+  other: {
+    "google-site-verification": "5jNvbJ8mYEJMoCgI0DhwfkJnKumBz82SiXFC8oKoeuA",
+  },
   keywords: [
     "cricket auction",
     "auction app",
